@@ -1,0 +1,23 @@
+[package]
+name = "examples"
+version = "0.1.0"
+authors = ["Fredrik Meyer <hrmeyer@gmail.com>"]
+edition = "2018"
+
+[lib]
+path="main.rs"
+
+[[bin]]
+name="foo"
+path="main.rs"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ray_tracing = { version="0.1.0", path=".."}
+image = "0.23.12"
+
+[[example]]
+name = "test"
+path = "test.rs"
