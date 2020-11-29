@@ -167,11 +167,37 @@ pub struct Scene {
 }
 
 impl Scene {
+    pub fn new(
+        width: u32,
+        height: u32,
+        fov: f64,
+        shadow_bias: f64,
+        max_recursion_depth: u32,
+    ) -> Scene {
+        Scene {
+            width,
+            height,
+            fov,
+            lights: vec![],
+            elements: vec![],
+            shadow_bias,
+            max_recursion_depth,
+        }
+    }
+
     pub fn trace(&self, ray: &Ray) -> Option<Intersection> {
         self.elements
             .iter()
             .filter_map(|s| s.intersect(ray).map(|d| Intersection::new(d, s)))
             .min_by(|i1, i2| i1.distance.partial_cmp(&i2.distance).unwrap())
+    }
+
+    pub fn add_element(&mut self, element: Element) {
+        self.elements.push(element);
+    }
+
+    pub fn add_light(&mut self, light: Light) {
+        self.lights.push(light);
     }
 }
 
