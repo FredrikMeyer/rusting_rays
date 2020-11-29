@@ -1,7 +1,5 @@
-#[cfg(test)]
-use crate::color::Color;
 use crate::math::{Point, Vector3};
-use crate::scene::{Scene, Sphere};
+use crate::scene::Scene;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Ray {
@@ -29,87 +27,12 @@ impl Ray {
             .normalize(),
         }
     }
-}
 
-pub struct Intersection<'a> {
-    pub distance: f64,
-    pub object: &'a Sphere,
-}
-
-impl<'a> Intersection<'a> {
-    pub fn new<'b>(distance: f64, object: &'b Sphere) -> Intersection<'b> {
-        Intersection { distance, object }
-    }
-}
-
-pub trait Intersectable {
-    fn intersect(&self, ray: &Ray) -> Option<f64>;
-}
-
-impl Intersectable for Sphere {
-    fn intersect(&self, ray: &Ray) -> Option<f64> {
-        let ray_origin = ray.origin;
-        let ray_direction = &ray.direction;
-        let sphere_center = self.center;
-
-        // From origin to sphere center
-        let l = sphere_center - ray_origin;
-        let hyp_sq = l.sq_length();
-
-        let a = l.dot(&ray_direction);
-
-        let d2 = hyp_sq - a * a;
-        let r2 = self.radius * self.radius;
-
-        if d2 > r2 {
-            return None;
+    pub fn create_reflection(normal: Vector3, incident: &Vector3, intersection: &Point, bias: f64) -> Ray {
+        Ray {
+            origin: (intersection.as_vector() + normal * bias).as_point(),
+            direction: *incident - (normal * incident.dot(&normal) * 2.0 )
         }
-
-        let q2 = r2 - d2;
-
-        // TODO: handle the case when the sphere is behind the camera
-        // See here https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
-
-        Some((a - q2).sqrt())
     }
 }
-
-#[test]
-fn test_intersect() {
-    let sphere = Sphere {
-        center: Point {
-            x: 1.,
-            y: 0.,
-            z: 0.,
-        },
-        radius: 0.5,
-        color: Color {
-            red: 0.,
-            green: 0.,
-            blue: 0.,
-        },
-        albedo: 0.17,
-    };
-
-    let ray = Ray {
-        direction: Vector3 {
-            x: 1.,
-            y: 0.,
-            z: 0.,
-        },
-        origin: Point::zero(),
-    };
-
-    let ray2 = Ray {
-        direction: Vector3 {
-            x: 0.,
-            y: 1.,
-            z: 0.,
-        },
-        origin: Point::zero(),
-    };
-
-    assert!(sphere.intersect(&ray).is_some());
-    assert!(sphere.intersect(&ray).unwrap() > 0.);
-    assert!(sphere.intersect(&ray2).is_none());
-}
+ 

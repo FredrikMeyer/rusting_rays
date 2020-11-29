@@ -4,8 +4,6 @@ version = "0.1.0"
 authors = ["Fredrik Meyer <hrmeyer@gmail.com>"]
 edition = "2018"
 
-[lib]
-path="main.rs"
 
 [[bin]]
 name="foo"
@@ -17,7 +15,3 @@ path="main.rs"
 [dependencies]
 ray_tracing = { version="0.1.0", path=".."}
 image = "0.23.12"
-
-[[example]]
-name = "test"
-path = "test.rs"

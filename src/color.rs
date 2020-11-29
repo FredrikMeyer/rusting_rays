@@ -26,6 +26,14 @@ impl Color {
         )
     }
 
+    pub fn from_rgba(rgba: &Rgba<u8>) -> Self {
+        Color {
+            red: (rgba.channels()[0] as f32) / 255.,
+            blue: (rgba.channels()[1] as f32) / 255.,
+            green: (rgba.channels()[2] as f32) / 255.,
+        }
+    }
+
     pub fn clamp(&self) -> Color {
         Color {
             red: self.red.min(1.0).max(0.0),
@@ -67,3 +75,9 @@ impl Add for Color {
         }
     }
 }
+
+pub const BLACK: Color = Color {
+    red: 0.,
+    green: 0.,
+    blue: 0.,
+};

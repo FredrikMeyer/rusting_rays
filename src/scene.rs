@@ -1,11 +1,60 @@
+use image::DynamicImage;
+use image::GenericImageView;
+
 use crate::color::Color;
 use crate::math::Point;
 use crate::math::Vector3;
 use crate::rendering::Ray;
 
+pub struct TextureCoords {
+    pub x: f32,
+    pub y: f32,
+}
+
+// pub struct Texture {
+//     pub path: PathBuf,
+
+// }
+
+pub enum Coloration {
+    Color(Color),
+    Texture(DynamicImage),
+}
+
+fn wrap(val: f32, bound: u32) -> u32 {
+    let signed_bound = bound as i32;
+    let float_coord = val * bound as f32;
+    let wrapped_coord = (float_coord as i32) % signed_bound;
+    if wrapped_coord < 0 {
+        (wrapped_coord + signed_bound) as u32
+    } else {
+        wrapped_coord as u32
+    }
+}
+
+impl Coloration {
+    pub fn color(&self, texture_coords: &TextureCoords) -> Color {
+        match &self {
+            Coloration::Color(c) => *c,
+            Coloration::Texture(texture) => {
+                let tex_x = wrap(texture_coords.x, texture.width());
+                let tex_y = wrap(texture_coords.y, texture.height());
+
+                Color::from_rgba(&texture.get_pixel(tex_x, tex_y))
+            }
+        }
+    }
+}
+
+pub enum SurfaceType {
+    Diffuse,
+    Reflective { reflectivity: f32 },
+}
+
 pub struct Material {
-    pub color: Color,
+    pub color: Coloration,
     pub albedo: f32,
+    pub surface_type: SurfaceType,
 }
 
 pub struct Sphere {
@@ -15,24 +64,10 @@ pub struct Sphere {
     pub material: Material,
 }
 
-impl Sphere {
-    pub fn surface_normal(&self, point: &Point) -> Vector3 {
-        (*point - self.center).normalize()
-    }
-}
-
 pub struct Plane {
     pub p0: Point,
     pub normal: Vector3,
-    // Color stuff
     pub material: Material,
-}
-
-impl Plane {
-    pub fn surface_normal(&self, _: &Point) -> Vector3 {
-        // Bloggposten har en minus her??
-        self.normal * -1.
-    }
 }
 
 pub enum Element {
@@ -41,10 +76,10 @@ pub enum Element {
 }
 
 impl Element {
-    pub fn color(&self) -> &Color {
+    pub fn material(&self) -> &Material {
         match *self {
-            Element::Sphere(ref s) => &s.material.color,
-            Element::Plane(ref p) => &p.material.color,
+            Element::Sphere(ref s) => &s.material,
+            Element::Plane(ref p) => &p.material,
         }
     }
 
@@ -63,11 +98,42 @@ impl Element {
     }
 }
 
+pub struct Intersection<'a> {
+    pub distance: f64,
+    pub object: &'a Element,
+}
+
+impl<'a> Intersection<'a> {
+    pub fn new<'b>(distance: f64, object: &'b Element) -> Intersection<'b> {
+        Intersection { distance, object }
+    }
+}
+
+pub trait Intersectable {
+    fn intersect(&self, ray: &Ray) -> Option<f64>;
+    fn surface_normal(&self, hit_point: &Point) -> Vector3;
+    fn texture_coords(&self, hit_point: &Point) -> TextureCoords;
+}
+
 impl Intersectable for Element {
     fn intersect(&self, ray: &Ray) -> Option<f64> {
         match *self {
             Element::Sphere(ref s) => s.intersect(ray),
             Element::Plane(ref p) => p.intersect(ray),
+        }
+    }
+
+    fn surface_normal(&self, hit_point: &Point) -> Vector3 {
+        match *self {
+            Element::Sphere(ref s) => s.surface_normal(hit_point),
+            Element::Plane(ref p) => p.surface_normal(hit_point),
+        }
+    }
+
+    fn texture_coords(&self, hit_point: &Point) -> TextureCoords {
+        match *self {
+            Element::Sphere(ref s) => s.texture_coords(hit_point),
+            Element::Plane(ref p) => p.texture_coords(hit_point),
         }
     }
 }
@@ -95,6 +161,9 @@ pub struct Scene {
     pub fov: f64,
     pub lights: Vec<Light>,
     pub elements: Vec<Element>,
+
+    pub shadow_bias: f64,
+    pub max_recursion_depth: u32,
 }
 
 impl Scene {
@@ -104,24 +173,6 @@ impl Scene {
             .filter_map(|s| s.intersect(ray).map(|d| Intersection::new(d, s)))
             .min_by(|i1, i2| i1.distance.partial_cmp(&i2.distance).unwrap())
     }
-}
-
-pub struct Intersection<'a> {
-    pub distance: f64,
-    pub object: &'a Element,
-}
-
-impl<'a> Intersection<'a> {
-    pub fn new<'b>(distance: f64, object: &'b Element) -> Intersection<'b> {
-        if !distance.is_finite() {
-            panic!("infinite dinstance");
-        }
-        Intersection { distance, object }
-    }
-}
-
-pub trait Intersectable {
-    fn intersect(&self, ray: &Ray) -> Option<f64>;
 }
 
 impl Intersectable for Sphere {
@@ -160,6 +211,18 @@ impl Intersectable for Sphere {
 
         // Some(a - q2.sqrt())
     }
+
+    fn surface_normal(&self, point: &Point) -> Vector3 {
+        (*point - self.center).normalize()
+    }
+
+    fn texture_coords(&self, hit_point: &Point) -> TextureCoords {
+        let hit_vec = *hit_point - self.center;
+        TextureCoords {
+            x: (1.0 + (hit_vec.z.atan2(hit_vec.x) as f32) / std::f32::consts::PI) * 0.5,
+            y: (hit_vec.y / self.radius).acos() as f32 / std::f32::consts::PI,
+        }
+    }
 }
 
 impl Intersectable for Plane {
@@ -180,90 +243,33 @@ impl Intersectable for Plane {
         }
         None
     }
-}
 
-#[test]
-fn test_plane_intersect() {
-    let plane = Plane {
-        normal: Vector3 {
-            x: 0.,
-            y: 0.,
-            z: -1.0,
-        },
-        p0: Point {
-            x: 0.,
-            y: 0.,
-            z: -20.,
-        },
-        color: Color {
-            red: 0.6,
-            green: 0.8,
-            blue: 1.0,
-        },
-        albedo: 0.18,
-    };
+    fn surface_normal(&self, _hit_point: &Point) -> Vector3 {
+        self.normal * -1.
+    }
 
-    let ray = Ray {
-        direction: Vector3 {
-            x: 0.,
-            y: 0.,
-            z: -1.,
-        },
-        origin: Point::zero(),
-    };
-
-    let ray2 = Ray {
-        direction: Vector3 {
-            x: 1.,
-            y: 1.,
-            z: -1.,
-        },
-        origin: Point::zero(),
-    };
-
-    let intersection = plane.intersect(&ray);
-    let intersection2 = plane.intersect(&ray2);
-
-    assert!(intersection.is_some());
-    assert!(intersection2.is_some());
-}
-
-#[test]
-fn test_intersect() {
-    let sphere = Sphere {
-        center: Point {
+    fn texture_coords(&self, hit_point: &Point) -> TextureCoords {
+        let mut x_axis = self.normal.cross(&Vector3 {
             x: 1.,
             y: 0.,
             z: 0.,
-        },
-        radius: 0.5,
-        color: Color {
-            red: 0.,
-            green: 0.,
-            blue: 0.,
-        },
-        albedo: 0.18,
-    };
+        });
 
-    let ray = Ray {
-        direction: Vector3 {
-            x: 1.,
-            y: 0.,
-            z: 0.,
-        },
-        origin: Point::zero(),
-    };
+        if x_axis.length() == 0. {
+            x_axis = self.normal.cross(&Vector3 {
+                x: 0.,
+                y: 1.,
+                z: 0.,
+            });
+        }
 
-    let ray2 = Ray {
-        direction: Vector3 {
-            x: 0.,
-            y: 1.,
-            z: 0.,
-        },
-        origin: Point::zero(),
-    };
+        let y_axis = x_axis.cross(&self.normal);
 
-    assert!(sphere.intersect(&ray).is_some());
-    assert!(sphere.intersect(&ray).unwrap() > 0.);
-    assert!(sphere.intersect(&ray2).is_none());
+        let point_as_vector = hit_point.as_vector();
+
+        TextureCoords {
+            x: point_as_vector.dot(&x_axis) as f32,
+            y: point_as_vector.dot(&y_axis) as f32,
+        }
+    }
 }

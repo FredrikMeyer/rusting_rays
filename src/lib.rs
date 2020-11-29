@@ -4,17 +4,21 @@ pub mod color;
 pub mod math;
 mod rendering;
 pub mod scene;
+#[cfg(test)]
+pub mod test;
 
 use color::Color;
-use image::{DynamicImage, GenericImage, GenericImageView, ImageBuffer, Pixel, Rgba};
-use math::{Point, Vector3};
-use rendering::{Intersectable, Ray};
+use color::BLACK;
+use image::{DynamicImage, GenericImage, Pixel, Rgba};
+use math::Point;
+use math::Vector3;
+use rendering::Ray;
 use scene::Element;
+use scene::Intersectable;
 use scene::Intersection;
 use scene::Light;
-use scene::Material;
-use scene::SphericalLight;
-use scene::{Scene, Sphere};
+use scene::Scene;
+use scene::SurfaceType;
 
 pub fn render(scene: &Scene) -> DynamicImage {
     let mut image = DynamicImage::new_rgb8(scene.width, scene.height);
@@ -25,27 +29,48 @@ pub fn render(scene: &Scene) -> DynamicImage {
         for y in 0..scene.height {
             let ray = Ray::create_prime(x, y, scene);
 
-            match scene.trace(&ray) {
-                Some(intersection) => {
-                    // let color = intersection.object.color().clone();
+            let color = cast_ray(scene, &ray, 0);
+            image.put_pixel(x, y, color.to_rgba());
 
-                    let color = get_color(scene, &ray, &intersection);
-
-                    image.put_pixel(x, y, color.clamp().to_rgba());
-                }
-                None => {
-                    image.put_pixel(x, y, black);
-                }
-            }
         }
     }
     image
 }
 
-fn get_color(scene: &Scene, ray: &Ray, intersection: &Intersection) -> Color {
-    let hit_point: Vector3 = ray.origin.as_vector() + (ray.direction * intersection.distance);
-    let surface_normal = intersection.object.normal(&hit_point.as_point());
+pub fn cast_ray(scene: &Scene, ray: &Ray, depth: u32) -> Color {
+    if depth >= scene.max_recursion_depth {
+        return BLACK;
+    }
 
+    let intersection = scene.trace(&ray);
+
+    intersection
+        .map(|i| get_color(scene, ray, &i, depth))
+        .unwrap_or(BLACK)
+}
+
+fn get_color(scene: &Scene, ray: &Ray, intersection: &Intersection, depth: u32) -> Color {
+    let hit_point: Vector3 = ray.origin.as_vector() + (ray.direction * intersection.distance);
+    let surface_normal = intersection.object.surface_normal(&hit_point.as_point());
+
+    let mut color = shade_diffuse(scene, intersection.object, hit_point, surface_normal);
+
+    if let SurfaceType::Reflective {reflectivity } = intersection.object.material().surface_type {
+        let reflection_ray = Ray::create_reflection(surface_normal, &ray.direction,&hit_point.as_point(), scene.shadow_bias);
+                color = color * (1.0 - reflectivity);
+        color = color + (cast_ray(scene, &reflection_ray, depth + 1) * reflectivity);
+    }
+
+    color
+}
+
+pub fn shade_diffuse(
+    scene: &Scene,
+    element: &Element,
+    hit_point: Vector3,
+    surface_normal: Vector3,
+) -> Color {
+    let texture_coords = element.texture_coords(&hit_point.as_point());
     let mut color = Color {
         red: 0.0,
         blue: 0.0,
@@ -65,7 +90,7 @@ fn get_color(scene: &Scene, ray: &Ray, intersection: &Intersection) -> Color {
                 let light_intensity = if in_light { l.intensity } else { 0.0 };
                 let light_power =
                     (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light_intensity;
-                let light_reflected = intersection.object.albedo() / std::f32::consts::PI;
+                let light_reflected = element.albedo() / std::f32::consts::PI;
 
                 l.color * light_power * light_reflected
             }
@@ -88,100 +113,14 @@ fn get_color(scene: &Scene, ray: &Ray, intersection: &Intersection) -> Color {
                 let light_intensity = if in_light { intensity } else { 0.0 };
                 let light_power =
                     (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light_intensity;
-                let light_reflected = intersection.object.albedo() / std::f32::consts::PI;
+                let light_reflected = element.albedo() / std::f32::consts::PI;
 
                 l.color * light_power * light_reflected
             }
         };
 
-        color = color + *intersection.object.color() * (light_color);
+        color = color + element.material().color.color(&texture_coords) * (light_color);
     }
 
     color.clamp()
-}
-
-#[test]
-fn test_can_render_scene() {
-    let scene = Scene {
-        width: 80,
-        height: 60,
-        fov: 90.0,
-        lights: vec![Light {
-            direction: Vector3 {
-                x: 0.,
-                y: 0.,
-                z: -1.,
-            },
-            color: Color {
-                red: 1.,
-                green: 1.,
-                blue: 1.,
-            },
-            intensity: 100.,
-        }],
-        elements: vec![Element::Sphere(Sphere {
-            center: Point {
-                x: 0.0,
-                y: 0.0,
-                z: -5.0,
-            },
-            radius: 1.0,
-            material: Material {
-                color: Color {
-                    red: 0.4,
-                    green: 1.0,
-                    blue: 0.4,
-                },
-                albedo: 0.18,
-            },
-        })],
-    };
-
-    let img: DynamicImage = render(&scene);
-    assert_eq!(scene.width, img.width());
-    assert_eq!(scene.height, img.height());
-}
-
-#[test]
-fn test_intersect() {
-    let scene = Scene {
-        width: 800,
-        height: 600,
-        fov: 90.0,
-        lights: vec![Light {
-            direction: Vector3 {
-                x: 0.,
-                y: 0.,
-                z: -1.,
-            },
-            color: Color {
-                red: 1.,
-                green: 1.,
-                blue: 1.,
-            },
-            intensity: 100.,
-        }],
-        elements: vec![Element::Sphere(Sphere {
-            center: Point {
-                x: 0.0,
-                y: 0.0,
-                z: -5.0,
-            },
-            radius: 1.0,
-            material: Material {
-                color: Color {
-                    red: 0.4,
-                    green: 1.0,
-                    blue: 0.4,
-                },
-                albedo: 0.17,
-            },
-        })],
-    };
-
-    let ray = Ray::create_prime(400, 300, &scene);
-    println!("{:?}", ray);
-    assert!(scene.trace(&ray).is_some());
-    let ray2 = Ray::create_prime(0, 0, &scene);
-    assert!(scene.trace(&ray2).is_none());
 }

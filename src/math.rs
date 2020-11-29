@@ -49,6 +49,17 @@ impl Vector3 {
             z: self.z,
         }
     }
+
+    pub fn cross(&self, other: &Vector3) -> Vector3 {
+        let a = other.x;
+        let b = other.y;
+        let c = other.z;
+        Vector3 {
+            x: self.z * b - self.y * c,
+            y: a * self.z - c * self.x,
+            z: a * self.y - b * self.x,
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -98,6 +109,17 @@ impl Point {
 impl Sub<Point> for Point {
     type Output = Vector3;
     fn sub(self, other: Point) -> Self::Output {
+        Vector3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
+impl Sub<Vector3> for Vector3 {
+    type Output = Vector3;
+    fn sub(self, other: Vector3) -> Self::Output {
         Vector3 {
             x: self.x - other.x,
             y: self.y - other.y,
