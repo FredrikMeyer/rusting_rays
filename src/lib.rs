@@ -10,7 +10,6 @@ pub mod test;
 use color::Color;
 use color::BLACK;
 use image::{DynamicImage, GenericImage, Pixel, Rgba};
-use math::Point;
 use math::Vector3;
 use rendering::Ray;
 use scene::Element;
@@ -31,7 +30,6 @@ pub fn render(scene: &Scene) -> DynamicImage {
 
             let color = cast_ray(scene, &ray, 0);
             image.put_pixel(x, y, color.to_rgba());
-
         }
     }
     image
@@ -55,9 +53,14 @@ fn get_color(scene: &Scene, ray: &Ray, intersection: &Intersection, depth: u32) 
 
     let mut color = shade_diffuse(scene, intersection.object, hit_point, surface_normal);
 
-    if let SurfaceType::Reflective {reflectivity } = intersection.object.material().surface_type {
-        let reflection_ray = Ray::create_reflection(surface_normal, &ray.direction,&hit_point.as_point(), scene.shadow_bias);
-                color = color * (1.0 - reflectivity);
+    if let SurfaceType::Reflective { reflectivity } = intersection.object.material().surface_type {
+        let reflection_ray = Ray::create_reflection(
+            surface_normal,
+            &ray.direction,
+            &hit_point.as_point(),
+            scene.shadow_bias,
+        );
+        color = color * (1.0 - reflectivity);
         color = color + (cast_ray(scene, &reflection_ray, depth + 1) * reflectivity);
     }
 
