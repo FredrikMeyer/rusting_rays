@@ -1,2 +1,5 @@
 /target
 examples/target/
+node_modules/
+
+./pkg/

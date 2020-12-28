@@ -186,6 +186,20 @@ impl Scene {
         }
     }
 
+    pub fn pixel_to_world_coordinates(&self, px: u32, py: u32, z: f64) -> Point {
+        let fov_adjustment = (self.fov.to_radians() / 2.0).tan();
+        let aspect_ratio = (self.width as f64) / (self.height as f64);
+        let sensor_x =
+            ((((px as f64 + 0.5) / self.width as f64) * 2.0 - 1.0) * aspect_ratio) * fov_adjustment;
+        let sensor_y = (1.0 - ((py as f64 + 0.5) / self.height as f64) * 2.0) * fov_adjustment;
+
+        Point {
+            x: sensor_x,
+            y: sensor_y,
+            z,
+        }
+    }
+
     pub fn trace(&self, ray: &Ray) -> Option<Intersection> {
         self.elements
             .iter()

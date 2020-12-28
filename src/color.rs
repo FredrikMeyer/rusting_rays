@@ -26,6 +26,16 @@ impl Color {
         )
     }
 
+    // TODO: slice instead?
+    pub fn to_vec(&self) -> Vec<u8> {
+        vec![
+            ((self.red) * 255.) as u8,
+            ((self.green) * 255.) as u8,
+            ((self.blue) * 255.) as u8,
+            255 as u8,
+        ]
+    }
+
     pub fn from_rgba(rgba: &Rgba<u8>) -> Self {
         Color {
             red: (rgba.channels()[0] as f32) / 255.,
