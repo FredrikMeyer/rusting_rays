@@ -11,7 +11,7 @@ pub mod test_scene;
 use color::Color;
 use color::BLACK;
 use image::{DynamicImage, GenericImage};
-use math::{Point, Vector3};
+use math::Vector3;
 use rendering::Ray;
 use scene::Intersectable;
 use scene::Intersection;
