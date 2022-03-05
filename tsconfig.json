@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+      "outDir": "./dist/",
+      "noImplicitAny": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "target": "es5",
+      "jsx": "react",
+      "allowJs": true,
+      "paths": {
+          "@pkg/*": ["pkg/*"]
+      },
+      "baseUrl": ".",
+      "rootDir": "."
+  }
+}

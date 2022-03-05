@@ -44,6 +44,6 @@ module.exports = {
     syncWebAssembly: true
   },
   devServer: {
-    watchContentBase: true
+
   }
 };
