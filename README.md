@@ -6,4 +6,4 @@ At the moment I'm closely following the blog tutorials from [Brook Heisler's blo
 
 ## Run
 
-Run the example from the `examples` directory with `cargo run`.
+Run the example from the root directory with `cargo run`. This produces a file `test.png`.

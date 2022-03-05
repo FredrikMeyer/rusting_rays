@@ -6,14 +6,14 @@ use ray_tracing::math::*;
 use ray_tracing::scene::*;
 
 pub fn main() {
-    let img = ImageReader::open("checkerboard.png")
+    let checkerboard_image = ImageReader::open("checkerboard.png")
         .ok()
         .unwrap()
         .decode()
         .ok()
         .unwrap();
 
-    let texture = Coloration::Texture(img);
+    let texture = Coloration::Texture(checkerboard_image);
 
     let mut scene = Scene {
         width: 800,
