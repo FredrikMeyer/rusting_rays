@@ -3,11 +3,12 @@ use std::ops::Mul;
 
 use image::{Pixel, Rgba};
 
-const GAMMA: f32 = 2.2;
+// Comment out unused code
+// const GAMMA: f32 = 2.2;
 
-fn gamma_encode(linear: f32) -> f32 {
-    linear.powf(1.0 / GAMMA)
-}
+// fn gamma_encode(linear: f32) -> f32 {
+//     linear.powf(1.0 / GAMMA)
+// }
 
 #[derive(Debug, Clone, Copy)]
 pub struct Color {

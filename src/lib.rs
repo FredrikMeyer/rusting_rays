@@ -47,15 +47,6 @@ pub struct JSPoint {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize)]
-pub struct TestOptions {}
-
-#[wasm_bindgen]
-impl TestOptions {
-    pub fn new() -> () {}
-}
-
-#[wasm_bindgen]
 impl ImageRawData {
     pub fn get_image(width: u32, height: u32, point: JsValue) -> ImageRawData {
         // serde_wasm_bindgen::from_value(value).ex
@@ -133,6 +124,7 @@ pub fn render_to_image_data(scene: &Scene) -> ImageRawData {
     }
 }
 
+/// Render a scene.
 pub fn render(scene: &Scene) -> DynamicImage {
     let mut image = DynamicImage::new_rgb8(scene.width, scene.height);
 
@@ -147,6 +139,7 @@ pub fn render(scene: &Scene) -> DynamicImage {
     image
 }
 
+/// Given a Scene and a ray, define its color.
 pub fn cast_ray(scene: &Scene, ray: &Ray, depth: u32) -> Color {
     if depth >= scene.max_recursion_depth {
         return BLACK;
@@ -159,6 +152,7 @@ pub fn cast_ray(scene: &Scene, ray: &Ray, depth: u32) -> Color {
         .unwrap_or(BLACK)
 }
 
+/// Given a scene and an intersection point with the given ray, return its color.
 fn get_color(scene: &Scene, ray: &Ray, intersection: &Intersection, depth: u32) -> Color {
     let hit_point: Vector3 = ray.origin.as_vector() + (ray.direction * intersection.distance);
     let surface_normal = intersection.object.surface_normal(&hit_point.as_point());
@@ -203,6 +197,9 @@ pub fn shade_diffuse(
                 let in_light = scene.trace(&shadow_ray).is_none();
 
                 let light_intensity = if in_light { l.intensity } else { 0.0 };
+
+                // Lambert's cosine law
+                // https://en.wikipedia.org/wiki/Lambert%27s_cosine_law
                 let light_power =
                     (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light_intensity;
                 let light_reflected = element.albedo() / std::f32::consts::PI;

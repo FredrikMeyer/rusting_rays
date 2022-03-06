@@ -104,6 +104,14 @@ impl Point {
         let z = self.z;
         Vector3 { x, y, z }
     }
+
+    pub fn from_list(f_list: [f64; 3]) -> Point {
+        Point {
+            x: f_list[0],
+            y: f_list[1],
+            z: f_list[2],
+        }
+    }
 }
 
 impl Sub<Point> for Point {

@@ -1,6 +1,7 @@
 use crate::math::{Point, Vector3};
 use crate::scene::Scene;
 
+/// A Ray represents a ray from the "eye". It has an origin and a direction.
 #[derive(Copy, Clone, Debug)]
 pub struct Ray {
     pub origin: Point,
@@ -18,6 +19,14 @@ impl Ray {
         }
     }
 
+    /// Create a reflection
+    ///
+    /// # Arguments
+    ///
+    /// * `normal` fff
+    /// * `incident` fff
+    /// * `intersection` fff
+    /// * `bias` fff
     pub fn create_reflection(
         normal: Vector3,
         incident: &Vector3,
@@ -30,6 +39,7 @@ impl Ray {
         }
     }
 
+    /// Create transmission (what is that??)
     pub fn create_transmission(
         normal: Vector3,
         incident: Vector3,
