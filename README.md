@@ -11,3 +11,7 @@ Run the example from the root directory with `cargo run`. This produces a file `
 ## Run in browser
 
 Run `npm serve`. This uses WebAssembly to do the ray tracing in the browser.
+
+## Todos
+
+Sett opp litt GH actions, a la https://dev.to/bampeers/rust-ci-with-github-actions-1ne9
