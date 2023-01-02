@@ -1,0 +1,4 @@
+dist/
+pkg/
+.eslintrc.js
+webpack.config.js

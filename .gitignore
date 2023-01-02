@@ -1,5 +1,5 @@
 /target
 examples/target/
 node_modules/
-
+dist/
 ./pkg/

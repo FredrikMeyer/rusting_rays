@@ -17,9 +17,9 @@ async function getData(width: number, height: number, point: Point) {
 }
 
 function getOptions() {
-  let form = document.getElementById("form") as HTMLFormElement;
-  let formData = new FormData(form);
-  console.log(formData);
+  const form = document.getElementById("form") as HTMLFormElement;
+  const formData = new FormData(form);
+
   const width = Number(formData.get("width"));
   const height = Number(formData.get("height"));
   return {
@@ -29,7 +29,7 @@ function getOptions() {
 }
 
 function drawToCanvas(data: ImageRawData) {
-  let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
   console.log(canvas.width);
   canvas.width = data.get_width();
