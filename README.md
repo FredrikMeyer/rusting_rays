@@ -8,6 +8,10 @@ At the moment I'm closely following the blog tutorials from [Brook Heisler's blo
 
 Run the example from the root directory with `cargo run`. This produces a file `test.png`.
 
+### Build
+
+If it is a long time since build, run `rustup update` to update deps. Then run `cargo build`.
+
 ## Run in browser
 
 Run `npm serve`. This uses WebAssembly to do the ray tracing in the browser.
