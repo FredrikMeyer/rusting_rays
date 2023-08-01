@@ -14,7 +14,7 @@ If it is a long time since build, run `rustup update` to update deps. Then run `
 
 ## Run in browser
 
-Run `npm serve`. This uses WebAssembly to do the ray tracing in the browser.
+Run `npm serve`. This uses WebAssembly to do the ray tracing in the browser. Open your browser on `localhost:8080`.
 
 ## Todos
 
