@@ -1,19 +1,17 @@
 <html>
   <head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
     <h1>Rasm rays</h1>
     <form id="form" name="form">
       <label for="width">Width</label>
-      <input type="number" name="width" id="width">
+      <input type="number" name="width" id="width" />
       <label for="height">Height</label>
-      <input type="number" name="height" id="height">
-      <button id="generate-image">
-      Generate!
-      </button>
+      <input type="number" name="height" id="height" />
+      <button id="generate-image">Generate!</button>
     </form>
     <canvas id="canvas"></canvas>
   </body>
