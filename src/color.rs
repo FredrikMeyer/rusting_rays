@@ -19,12 +19,12 @@ pub struct Color {
 
 impl Color {
     pub fn to_rgba(&self) -> Rgba<u8> {
-        Rgba::from_channels(
+        Rgba([
             ((self.red) * 255.) as u8,
             ((self.green) * 255.) as u8,
             ((self.blue) * 255.) as u8,
             0,
-        )
+        ])
     }
 
     // TODO: slice instead?

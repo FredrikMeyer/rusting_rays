@@ -1,10 +1,5 @@
 extern crate image;
 
-use image::io::Reader as ImageReader;
-use std::path::PathBuf;
-use std::{fs, path::Path};
-use wasm_bindgen::JsValue;
-
 use crate::{
     color::Color,
     math::{Point, Vector3},
@@ -15,17 +10,6 @@ use crate::{
 };
 
 pub fn test_scene(width: u32, height: u32) -> Scene {
-    // unsafe {
-    //     let array = js_sys::Array::new();
-    //     array.push(&JsValue::from_str(srcdir.to_str().expect("sometnig")));
-    //     web_sys::console::log(&array);
-    // }
-
-    // let p = Path::new("./checkerboard.png");
-    // let img = ImageReader::open(p).ok().unwrap().decode().ok().unwrap();
-
-    // let texture = Coloration::Texture(img);
-
     let mut scene = Scene {
         width,
         height,
