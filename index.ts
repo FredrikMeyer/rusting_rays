@@ -65,7 +65,7 @@ canvas.addEventListener("mousedown", async (e: MouseEvent) => {
   drawToCanvas(data);
 });
 
-window.onload = (_) => {
+window.onload = () => {
   console.log(getOptions());
   const options = getOptions();
   getData(options.width, options.height, undefined).then((d) =>
