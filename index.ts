@@ -11,7 +11,7 @@ async function getData(width: number, height: number, point: Point) {
   const data = (await import("./pkg")).ImageRawData.get_image(
     width,
     height,
-    point === undefined ? { x: -1000, y: -1000 } : point
+    point === undefined ? { x: -1000, y: -1000 } : point,
   );
   return data;
 }
@@ -69,6 +69,6 @@ window.onload = (_) => {
   console.log(getOptions());
   const options = getOptions();
   getData(options.width, options.height, undefined).then((d) =>
-    drawToCanvas(d)
+    drawToCanvas(d),
   );
 };
