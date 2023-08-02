@@ -20,8 +20,8 @@ function getOptions() {
   const form = document.getElementById("form") as HTMLFormElement;
   const formData = new FormData(form);
 
-  const width = Number(formData.get("width"));
-  const height = Number(formData.get("height"));
+  const width = Number(formData.get("width") || 300);
+  const height = Number(formData.get("height") || 300);
   return {
     width,
     height,
@@ -64,3 +64,11 @@ canvas.addEventListener("mousedown", async (e: MouseEvent) => {
   const data = await getData(options.width, options.height, { x, y });
   drawToCanvas(data);
 });
+
+window.onload = (event) => {
+  console.log(getOptions());
+  const options = getOptions();
+  const data = getData(options.width, options.height, undefined).then((d) =>
+    drawToCanvas(d)
+  );
+};
