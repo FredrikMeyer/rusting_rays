@@ -6,7 +6,7 @@
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.9.1",
     "@wasm-tool/wasm-pack-plugin": "1.7.0",
-    "eslint": "^8.52.0",
+    "eslint": "^8.54.0",
     "html-webpack-plugin": "^5.5.3",
     "text-encoding": "^0.7.0",
     "ts-loader": "^9.5.0",
