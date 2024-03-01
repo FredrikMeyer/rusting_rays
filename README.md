@@ -25,6 +25,7 @@ npm run prettier -- --check .
 ```
 
 Write:
+
 ```
 npm run prettier -- --write .
 ```
