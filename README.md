@@ -16,6 +16,20 @@ If it is a long time since build, run `rustup update` to update deps. Then run `
 
 Run `npm serve`. This uses WebAssembly to do the ray tracing in the browser. Open your browser on `localhost:8080`.
 
+## Run/fix prettier
+
+Check:
+
+```
+npm run prettier -- --check .
+```
+
+Write:
+
+```
+npm run prettier -- --write .
+```
+
 ## Todos
 
 Sett opp litt GH actions, a la https://dev.to/bampeers/rust-ci-with-github-actions-1ne9
