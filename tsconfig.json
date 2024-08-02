@@ -4,6 +4,7 @@
     "noImplicitAny": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "target": "esnext",
     "jsx": "react",
