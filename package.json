@@ -29,4 +29,5 @@
     "serve": "webpack-dev-server",
     "build": "webpack",
     "prettier": "prettier"
+  }
 }
