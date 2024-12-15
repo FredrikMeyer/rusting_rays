@@ -43,7 +43,7 @@ module.exports = {
   mode: "development",
   experiments: {
     //syncWebAssembly: true,
-    asyncWebAssembly: true
+    asyncWebAssembly: true,
   },
   devServer: {},
 };
