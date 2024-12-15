@@ -1,3 +1,4 @@
+import "./style.css";
 import("./pkg").catch(console.error);
 
 import { ImageRawData } from "./pkg";

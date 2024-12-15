@@ -2,6 +2,9 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
   entry: "./index.ts",
@@ -12,6 +15,13 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.css$/,
+        use: [
+          devMode ? "style-loader" : MiniCssExtractPlugin.loader,
+          "css-loader",
+        ],
+      },
       {
         test: /\.tsx?$/,
         use: "ts-loader",
@@ -39,7 +49,7 @@ module.exports = {
       TextDecoder: ["text-encoding", "TextDecoder"],
       TextEncoder: ["text-encoding", "TextEncoder"],
     }),
-  ],
+  ].concat(devMode ? [] : [new MiniCssExtractPlugin()]),
   mode: "development",
   experiments: {
     //syncWebAssembly: true,

@@ -33,3 +33,7 @@ npm run prettier -- --write .
 ## Todos
 
 Sett opp litt GH actions, a la https://dev.to/bampeers/rust-ci-with-github-actions-1ne9
+
+## Leseliste
+
+https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-polygon-mesh/polygon-to-triangle-mesh.html
