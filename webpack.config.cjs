@@ -29,7 +29,7 @@ module.exports = {
     }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, "."),
-      extraArgs: "--target web",
+      extraArgs: "--target bundler",
       /* forceMode: 'production', */
       watchDirectories: ["./src"],
     }),
@@ -42,7 +42,8 @@ module.exports = {
   ],
   mode: "development",
   experiments: {
-    syncWebAssembly: true,
+    //syncWebAssembly: true,
+    asyncWebAssembly: true
   },
   devServer: {},
 };

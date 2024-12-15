@@ -2,7 +2,7 @@ extern crate image;
 
 use std::f64::consts::PI;
 
-use image::io::Reader as ImageReader;
+use image::ImageReader;
 use ray_tracing::color::*;
 use ray_tracing::math::*;
 use ray_tracing::scene::*;
