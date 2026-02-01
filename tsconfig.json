@@ -8,11 +8,21 @@
     "sourceMap": true,
     "target": "esnext",
     "jsx": "react",
-    "allowJs": true,
+    "allowJs": false,
+    "types": [],
     "paths": {
       "@pkg/*": ["pkg/*"]
     },
     "baseUrl": ".",
     "rootDir": "."
-  }
+  },
+  "include": [
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "pkg",
+    "eslint.config.js"
+  ]
 }
