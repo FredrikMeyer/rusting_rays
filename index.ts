@@ -8,7 +8,7 @@ interface Point {
   y: number;
 }
 
-async function getData(width: number, height: number, point: Point) {
+async function getData(width: number, height: number, point: Point | undefined) {
   const data = ImageRawData.get_image(
     width,
     height,
@@ -36,16 +36,16 @@ function drawToCanvas(data: ImageRawData) {
   canvas.width = data.get_width();
   canvas.height = data.get_height();
   console.log(data.width, data.height);
-  const imageData = ctx.createImageData(canvas.width, canvas.height);
+  const imageData = ctx!.createImageData(canvas.width, canvas.height);
   const dataArray = data.get_data();
   imageData.data.set(dataArray);
   console.log("put data", data, "size", dataArray.length);
-  ctx.putImageData(imageData, 0, 0);
+  ctx!.putImageData(imageData, 0, 0);
 
   console.log("done drawing");
 }
 
-const form = document.getElementById("form");
+const form = document.getElementById("form")!;
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const options = getOptions();
@@ -53,7 +53,7 @@ form.addEventListener("submit", async (event) => {
   drawToCanvas(data);
 });
 
-const canvas = document.getElementById("canvas");
+const canvas = document.getElementById("canvas")!;
 canvas.addEventListener("mousedown", async (e: MouseEvent) => {
   const target = e.target as Element;
   const rect = target.getBoundingClientRect();
