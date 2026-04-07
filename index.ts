@@ -8,7 +8,11 @@ interface Point {
   y: number;
 }
 
-async function getData(width: number, height: number, point: Point | undefined) {
+async function getData(
+  width: number,
+  height: number,
+  point: Point | undefined,
+) {
   const data = ImageRawData.get_image(
     width,
     height,
