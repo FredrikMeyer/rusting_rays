@@ -3,16 +3,12 @@
     "outDir": "./dist/",
     "noImplicitAny": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "target": "esnext",
     "jsx": "react",
     "allowJs": true,
-    "paths": {
-      "@pkg/*": ["pkg/*"]
-    },
-    "baseUrl": ".",
     "rootDir": "."
   }
 }
