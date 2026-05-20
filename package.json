@@ -2,7 +2,7 @@
   "type": "module",
   "dependencies": {
     "prettier": "^3.8.3",
-    "wasm-pack": "^0.14.0"
+    "wasm-pack": "^0.15.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
